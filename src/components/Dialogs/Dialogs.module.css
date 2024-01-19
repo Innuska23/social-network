@@ -13,7 +13,11 @@
 }
 
 .messages {
+    width: 250px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    
 }
 
 .messages .message {
