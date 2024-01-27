@@ -9,7 +9,7 @@ let initialState = {
     { id: 4, message: "Yo" },
     { id: 5, message: "Yo" },
   ],
-  newMessageText: "Yo",
+  newMessageText: "",
   dialogs: [
     { id: 1, name: "Dimych" },
     { id: 2, name: "Andrey" },
@@ -22,17 +22,19 @@ let initialState = {
 
 const dialogsReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_MESSAGE:
-      let newMessage = {
-        id: 6,
-        message: state.newMessageText,
-      };
-      state.messages.push(newMessage);
-      state.newMessageText = "";
-      return state;
     case UPDATE_NEW_MESSAGE_TEXT:
-      state.newMessageText = action.newMessage;
-      return state;
+      return {
+        ...state,
+        newMessageText: action.newMessage,
+      };
+    case ADD_MESSAGE:
+      let newMessage = state.newMessageText;
+      return {
+        ...state,
+        newMessageText: " ",
+        messages: [...state.messages, { id: 6, message: newMessage }],
+      };
+
     default:
       return state;
   }
