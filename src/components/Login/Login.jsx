@@ -1,45 +1,67 @@
 import { useForm } from "react-hook-form";
 import s from "./Login.module.css";
+import { Input } from "../common/FormsControl/FormsControl";
+import { connect } from "react-redux";
+import { login } from "../../redux/auth-reducer";
+import { Navigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ login, isAuth, error }) => {
   return (
     <div>
       <h1>Login</h1>
-      <LoginForm />
+      <LoginForm login={login} isAuth={isAuth} error={error} />
     </div>
   );
 };
 
-const LoginForm = () => {
+const LoginForm = ({ login, isAuth, error }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm();
+
+  const onSubmit = async (data) => {
+    await login(data.email, data.password, data.rememberMe);
+  };
+
+  if (isAuth) {
+    return <Navigate to={"/profile"} />;
+  }
+
   return (
-    <form onSubmit={handleSubmit((data) => console.log(data))}>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {error && <p className={s.loginError}>{error}</p>}
       <div>
-        <input {...register("Login", { required: true })} placeholder="Login" />
-        {errors.Login && <p className={s.loginError}>Login is required.</p>}
+        <Input {...register("email", { required: true })} placeholder="Email" />
+        {errors.email && <p className={s.loginError}>Email is required.</p>}
       </div>
       <div>
-        <input
-          {...register("Password", { required: true })}
+        <Input
+          {...register("password", { required: true })}
           placeholder="Password"
+          type="password"
         />
-        {errors.Password && (
+        {errors.password && (
           <p className={s.loginError}>Password is required.</p>
         )}
       </div>
       <div>
-        <input type="checkbox" />
+        <input type="checkbox" {...register("rememberMe")} />
         Remember me
       </div>
       <div>
-        <button type="submit">Login</button>
+        <button type="submit" disabled={!isValid}>
+          Login
+        </button>
       </div>
     </form>
   );
 };
 
-export default Login;
+const mapStateToProps = (state) => ({
+  isAuth: state.auth.isAuth,
+  error: state.auth.error,
+});
+
+export default connect(mapStateToProps, { login })(Login);

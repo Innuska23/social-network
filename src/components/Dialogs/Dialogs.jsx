@@ -1,48 +1,87 @@
-import React from "react";
+import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import DialogItem from "./DialogItem/DialogItem";
 import s from "./Dialogs.module.css";
 import Message from "./Message/Message";
-import { Navigate } from "react-router-dom";
+import Textarea from "../common/FormsControl/FormsControl";
 
 const Dialogs = (props) => {
+  const [messages, setMessages] = useState(props.dialogsPage.messages);
+
   let state = props.dialogsPage;
 
   let dialogsElement = state?.dialogs.map((d) => {
     return <DialogItem name={d.name} key={d.id} id={d.id} />;
   });
 
-  let messagesElements = state?.messages.map((m) => {
+  let messagesElements = messages.map((m) => {
     return <Message text={m.message} key={m.id} />;
   });
 
-  let addMessage = () => {
-    props.sendMessage();
-  };
-
-  let onMessageChange = (e) => {
-    let message = e.target.value;
-    props.updateNewMessageAction(message);
-  };
-
   if (!props.isAuth) return <Navigate to={"/login"} />;
+
+  const addMessage = (newMessage) => {
+    const updatedMessages = [
+      ...messages,
+      { id: messages.length + 1, message: newMessage },
+    ];
+    setMessages(updatedMessages);
+  };
 
   return (
     <div className={s.dialogs}>
       <div className={s.dialogsItems}>{dialogsElement}</div>
-      <div className={s.messages}>
-        <div>
-          <textarea
-            placeholder="Enter your message"
-            onChange={onMessageChange}
-            value={props.newMessageText}
-          />
-        </div>
-        <div>
-          <button onClick={addMessage}>Add message</button>
-        </div>
-        {messagesElements}
-      </div>
+      <div className={s.messages}>{messagesElements}</div>
+      <AddNewMessage addMessage={addMessage} />
     </div>
+  );
+};
+
+const AddNewMessage = (props) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, touchedFields },
+    trigger,
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    await trigger();
+    if (Object.keys(errors).length === 0) {
+      props.addMessage(data.Textarea);
+      reset();
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <Textarea
+          {...register("Textarea", {
+            required: true,
+            maxLength: {
+              value: 1000,
+              message: "No more than 1000 characters.",
+            },
+          })}
+          placeholder="Enter your message"
+          className={errors.Textarea ? s.error : ""}
+        />
+        {touchedFields.Textarea &&
+          errors.Textarea &&
+          errors.Textarea.type === "required" && (
+            <p className={s.dialogsError}>Textarea is required.</p>
+          )}
+        {errors.Textarea && errors.Textarea.type === "maxLength" && (
+          <p className={s.dialogsError}>No more than 1000 characters.</p>
+        )}
+      </div>
+      <div>
+        <button type="submit">Add message</button>
+      </div>
+    </form>
   );
 };
 

@@ -1,4 +1,9 @@
-import { applyMiddleware, combineReducers, legacy_createStore } from "redux";
+import {
+  applyMiddleware,
+  combineReducers,
+  compose,
+  legacy_createStore,
+} from "redux";
 import sidebarReducer from "./sidebar-reducer";
 import dialogsReducer from "./dialogs-reducer";
 import profileReducer from "./profile-reducer";
@@ -14,7 +19,12 @@ let reducers = combineReducers({
   auth: authReducer,
 });
 
-let store = legacy_createStore(reducers, applyMiddleware(thunkMiddleware));
+const composerEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+let store = legacy_createStore(
+  reducers,
+  composerEnhancer(applyMiddleware(thunkMiddleware))
+);
 
 window.store = store;
 

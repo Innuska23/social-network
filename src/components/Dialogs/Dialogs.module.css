@@ -23,3 +23,11 @@
 .messages .message {
     color: white;
 }
+
+.dialogsError {
+    color: red;
+}
+
+.error {
+    border: 2px solid red;
+}
