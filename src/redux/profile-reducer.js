@@ -3,6 +3,7 @@ import { profileAPI } from "../api/api";
 const ADD_POST = "ADD-POST";
 const SET_USER_PROFILE = "SET-USER-PROFILE";
 const SET_STATUS = "SET_STATUS";
+const DELETE_POST = "DELETE-POST";
 
 let initialState = {
   posts: [
@@ -11,13 +12,14 @@ let initialState = {
   ],
   profile: null,
   status: "",
+  newPostText: "",
 };
 
 const profileReducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_POST: {
       let newPost = {
-        id: 5,
+        id: state.posts.length + 1,
         message: action.newPostText,
         likes: 0,
       };
@@ -39,12 +41,21 @@ const profileReducer = (state = initialState, action) => {
         status: action.status,
       };
     }
+    case DELETE_POST: {
+      return {
+        ...state,
+        posts: state.posts.filter((p) => p.id !== action.postId),
+      };
+    }
     default:
       return state;
   }
 };
 
-export const addPostActionCreator = (newPost) => ({ type: ADD_POST, newPost });
+export const addPostActionCreator = (newPostText) => ({
+  type: ADD_POST,
+  newPostText,
+});
 
 export const setUserProfile = (profile) => ({
   type: SET_USER_PROFILE,
@@ -56,24 +67,43 @@ export const setStatus = (status) => ({
   status,
 });
 
+export const deletePost = (postId) => ({ type: DELETE_POST, postId });
+
 export const getUserProfile = (userId) => (dispatch) => {
-  profileAPI.getProfile(userId).then((response) => {
-    dispatch(setUserProfile(response.data));
-  });
+  profileAPI
+    .getProfile(userId)
+    .then((response) => {
+      dispatch(setUserProfile(response.data));
+    })
+    .catch((error) => {
+      console.error("Error fetching user profile:", error);
+    });
 };
 
 export const getStatus = (userId) => (dispatch) => {
-  profileAPI.getStatus(userId).then((response) => {
-    dispatch(setStatus(response.data));
-  });
+  profileAPI
+    .getStatus(userId)
+    .then((response) => {
+      dispatch(setStatus(response.data));
+    })
+    .catch((error) => {
+      console.error("Error fetching status:", error);
+    });
 };
 
 export const updateStatus = (status) => (dispatch) => {
-  profileAPI.updateStatus(status).then((response) => {
-    if (response.data.resultCode === 0) {
-      dispatch(setStatus(status));
-    }
-  });
+  profileAPI
+    .updateStatus(status)
+    .then((response) => {
+      if (response.data.resultCode === 0) {
+        dispatch(setStatus(status));
+      } else {
+        console.error("Update status request failed:", response.data.error);
+      }
+    })
+    .catch((error) => {
+      console.error("Error updating status:", error);
+    });
 };
 
 export default profileReducer;

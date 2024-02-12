@@ -1,3 +1,5 @@
+import { getAuthUserData } from "./auth-reducer";
+
 const INITIALIZED_SUCESS = "INITIALIZED_SUCESS";
 
 let initialState = {
@@ -20,7 +22,15 @@ export const initializedSuccess = () => ({
   type: INITIALIZED_SUCESS,
 });
 
-export const initialize = () => (dispatch) => {};
+export const initializeApp = () => (dispatch) => {
+  let promise = dispatch(getAuthUserData());
+  debugger;
+  // dispatch(somethingelse())
+  // dispatch(somethingelse())
+  promise.then(() => {
+    dispatch(initializedSuccess());
+  });
+};
 
 // export const login = (email, password, rememberMe) => (dispatch) => {
 //   authAPI.login(email, password, rememberMe).then((response) => {
