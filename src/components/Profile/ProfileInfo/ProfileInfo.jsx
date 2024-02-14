@@ -2,27 +2,21 @@ import Preloader from "../../common/Preloader/Preloader";
 import s from "./ProfileInfo.module.css";
 import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 
-const ProfileInfo = (props) => {
-  if (!props.profile) {
+const ProfileInfo = ({ profile, status, updateStatus }) => {
+  if (!profile) {
     return <Preloader />;
   }
 
   return (
     <div>
-      {/* <div>
-        <img src="https://helpx.adobe.com/content/dam/help/en/photoshop/using/convert-color-image-black-white/jcr_content/main-pars/before_and_after/image-before/Landscape-Color.jpg" />
-      </div> */}
       <div className={s.descriptionBlock}>
-        {props.profile.aboutMe} <br />
-        {props.profile.fullName} <br />
-        {props.profile.contacts.facebook}
+        {profile.aboutMe} <br />
+        {profile.fullName} <br />
+        {profile.contacts.facebook}
         <div>
-          <img src={props.profile.photos.large} alt="ava" />
+          <img src={profile.photos.large} alt="ava" />
         </div>
-        <ProfileStatusWithHooks
-          status={props.status}
-          updateStatus={props.updateStatus}
-        />
+        <ProfileStatusWithHooks status={status} updateStatus={updateStatus} />
       </div>
     </div>
   );

@@ -69,41 +69,21 @@ export const setStatus = (status) => ({
 
 export const deletePost = (postId) => ({ type: DELETE_POST, postId });
 
-export const getUserProfile = (userId) => (dispatch) => {
-  profileAPI
-    .getProfile(userId)
-    .then((response) => {
-      dispatch(setUserProfile(response.data));
-    })
-    .catch((error) => {
-      console.error("Error fetching user profile:", error);
-    });
+export const getUserProfile = (userId) => async (dispatch) => {
+  let response = await profileAPI.getProfile(userId);
+  dispatch(setUserProfile(response.data));
 };
 
-export const getStatus = (userId) => (dispatch) => {
-  profileAPI
-    .getStatus(userId)
-    .then((response) => {
-      dispatch(setStatus(response.data));
-    })
-    .catch((error) => {
-      console.error("Error fetching status:", error);
-    });
+export const getStatus = (userId) => async (dispatch) => {
+  let response = await profileAPI.getStatus(userId);
+  dispatch(setStatus(response.data));
 };
 
-export const updateStatus = (status) => (dispatch) => {
-  profileAPI
-    .updateStatus(status)
-    .then((response) => {
-      if (response.data.resultCode === 0) {
-        dispatch(setStatus(status));
-      } else {
-        console.error("Update status request failed:", response.data.error);
-      }
-    })
-    .catch((error) => {
-      console.error("Error updating status:", error);
-    });
+export const updateStatus = (status) => async (dispatch) => {
+  let response = await profileAPI.updateStatus(status);
+  if (response.data.resultCode === 0) {
+    dispatch(setStatus(status));
+  }
 };
 
 export default profileReducer;

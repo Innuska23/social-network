@@ -28,6 +28,6 @@ let store = legacy_createStore(
   composerEnhancer(applyMiddleware(thunkMiddleware))
 );
 
-window.store = store;
+window.__store__ = store;
 
 export default store;

@@ -22,7 +22,11 @@ const LoginForm = ({ login, isAuth, error }) => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    await login(data.email, data.password, data.rememberMe);
+    try {
+      await login(data.email, data.password, data.rememberMe);
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   if (isAuth) {

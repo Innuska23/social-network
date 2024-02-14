@@ -1,7 +1,7 @@
 import { authAPI } from "../api/api";
 
-const SET_USER_DATA = "SET_USER_DATA";
-const LOGIN_FAILED = "LOGIN_FAILED";
+const SET_USER_DATA = "samurai-network/auth/SET_USER_DATA";
+const LOGIN_FAILED = "samurai-network/auth/LOGIN_FAILED";
 
 let initialState = {
   userId: null,
@@ -18,7 +18,6 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuth: true,
         error: null,
       };
     case LOGIN_FAILED:
@@ -43,29 +42,27 @@ export const loginFailed = (error) => ({
 
 export const getAuthUserData = () => (dispatch) => {
   return authAPI.me().then((response) => {
-    if (response.data.resultCode === 0) {
-      let { id, login, email } = response.data.data;
+    if (response.resultCode === 0) {
+      let { id, login, email } = response.data;
       dispatch(setAuthUserData(id, email, login, true));
     }
   });
 };
 
-export const login = (email, password, rememberMe) => (dispatch) => {
-  authAPI.login(email, password, rememberMe).then((response) => {
-    if (response.data.resultCode === 0) {
-      dispatch(getAuthUserData());
-    } else {
-      dispatch(loginFailed(response.data.messages[0]));
-    }
-  });
+export const login = (email, password, rememberMe) => async (dispatch) => {
+  let response = await authAPI.login(email, password, rememberMe);
+  if (response.data.resultCode === 0) {
+    dispatch(getAuthUserData());
+  } else {
+    dispatch(loginFailed(response.data.messages[0]));
+  }
 };
 
-export const logout = () => (dispatch) => {
-  authAPI.logout().then((response) => {
-    if (response.data.resultCode === 0) {
-      dispatch(setAuthUserData(null, null, null, false));
-    }
-  });
+export const logout = () => async (dispatch) => {
+  let response = await authAPI.logout();
+  if (response.data.resultCode === 0) {
+    dispatch(setAuthUserData(null, null, null, false));
+  }
 };
 
 export default authReducer;
