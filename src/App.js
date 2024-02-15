@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, HashRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { initializeApp } from "./redux/app-reducer";
 import Preloader from "./components/common/Preloader/Preloader";
@@ -29,7 +29,7 @@ class App extends Component {
     }
 
     return (
-      <BrowserRouter>
+      <HashRouter>
         <div className="app-wrapper">
           <HeaderContainer />
           <Navbar />
@@ -76,7 +76,7 @@ class App extends Component {
             </Routes>
           </div>
         </div>
-      </BrowserRouter>
+      </HashRouter>
     );
   }
 }
