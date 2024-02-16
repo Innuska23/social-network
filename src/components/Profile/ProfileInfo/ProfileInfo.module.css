@@ -6,3 +6,11 @@
     max-width: 200px;
     border-radius: 5px;
 }
+
+.contact{
+    padding-left: 10px;
+}
+
+.profileError {
+    color: #cb3837;
+}

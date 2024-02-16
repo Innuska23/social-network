@@ -6,6 +6,7 @@ import {
   updateStatus,
   getStatus,
   savePhoto,
+  saveProfile,
 } from "../../redux/profile-reducer";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { compose } from "redux";
@@ -73,6 +74,7 @@ export default compose(
     getStatus,
     updateStatus,
     savePhoto,
+    saveProfile,
   }),
   withRouter
 )(ProfileContainer);

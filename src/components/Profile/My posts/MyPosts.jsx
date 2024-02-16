@@ -9,7 +9,7 @@ const MyPosts = (props) => {
   const [posts, setPosts] = useState(props.posts);
 
   let postsElement = posts?.map((p) => {
-    return <Post message={p.message} likes={p.likes} />;
+    return <Post key={p.id} message={p.message} likes={p.likes} />;
   });
 
   const addPost = (newText) => {
