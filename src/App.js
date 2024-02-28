@@ -20,7 +20,9 @@ const Login = React.lazy(() => import("./components/Login/Login"));
 
 class App extends Component {
   componentDidMount() {
-    this.props.initializeApp();
+    if (!this.props.initialized) {
+      this.props.initializeApp();
+    }
   }
 
   render() {
@@ -60,7 +62,14 @@ class App extends Component {
                   </React.Suspense>
                 }
               />
-              <Route path="/login" element={<Login />} />
+              <Route
+                path="/login"
+                element={
+                  <React.Suspense fallback={<Preloader />}>
+                    <Login />
+                  </React.Suspense>
+                }
+              />
               <Route path="/news" />
               <Route path="/music" />
               <Route path="/settings" />

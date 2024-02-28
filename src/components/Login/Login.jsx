@@ -5,16 +5,22 @@ import { connect } from "react-redux";
 import { login } from "../../redux/auth-reducer";
 import { Navigate } from "react-router-dom";
 
-const Login = ({ login, isAuth, error }) => {
+const Login = ({ login, isAuth, error, captchaUrl }) => {
   return (
     <div>
       <h1>Login</h1>
-      <LoginForm login={login} isAuth={isAuth} error={error} />
+      <LoginForm
+        login={login}
+        isAuth={isAuth}
+        error={error}
+        captchaUrl={captchaUrl}
+      />
     </div>
   );
 };
 
-const LoginForm = ({ login, isAuth, error }) => {
+const LoginForm = ({ login, isAuth, error, captchaUrl }) => {
+  console.log("🚀 ~ LoginForm ~ isAuth:", isAuth);
   const {
     register,
     handleSubmit,
@@ -46,6 +52,13 @@ const LoginForm = ({ login, isAuth, error }) => {
           placeholder="Password"
           type="password"
         />
+        {captchaUrl && <img src={captchaUrl} alt="captcha" />}
+        {captchaUrl && (
+          <Input
+            {...register("captcha", { required: true })}
+            placeholder="Symbols from images"
+          />
+        )}
         {errors.password && (
           <p className={s.loginError}>Password is required.</p>
         )}
@@ -64,6 +77,7 @@ const LoginForm = ({ login, isAuth, error }) => {
 };
 
 const mapStateToProps = (state) => ({
+  captchaUrl: state.auth.captchaUrl,
   isAuth: state.auth.isAuth,
   error: state.auth.error,
 });

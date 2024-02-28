@@ -1,6 +1,8 @@
+import { authAPI } from "../api/api";
 import { getAuthUserData } from "./auth-reducer";
 
 const INITIALIZED_SUCESS = "INITIALIZED_SUCESS";
+const INITIALIZED_FAILED = "INITIALIZED_FAILED";
 
 let initialState = {
   initialized: null,
@@ -9,6 +11,11 @@ let initialState = {
 const appReducer = (state = initialState, action) => {
   switch (action.type) {
     case INITIALIZED_SUCESS:
+      return {
+        ...state,
+        initialized: true,
+      };
+    case INITIALIZED_FAILED:
       return {
         ...state,
         initialized: true,
@@ -22,13 +29,22 @@ export const initializedSuccess = () => ({
   type: INITIALIZED_SUCESS,
 });
 
-export const initializeApp = () => (dispatch) => {
-  let promise = dispatch(getAuthUserData());
-  // dispatch(somethingelse())
-  // dispatch(somethingelse())
-  promise.then(() => {
-    dispatch(initializedSuccess());
-  });
+export const initializedFailed = () => ({
+  type: INITIALIZED_FAILED,
+});
+
+export const initializeApp = () => async (dispatch) => {
+  try {
+    const response = await authAPI.me();
+    if (response.data.resultCode === 0) {
+      dispatch(getAuthUserData());
+      dispatch(initializedSuccess());
+    } else {
+      dispatch(initializedFailed());
+    }
+  } catch (e) {
+    dispatch(initializedFailed());
+  }
 };
 
 // export const login = (email, password, rememberMe) => (dispatch) => {
