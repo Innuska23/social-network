@@ -32,7 +32,10 @@ export const profileAPI = {
     return instance.get(`profile/status/` + userId);
   },
   updateStatus(status) {
-    return instance.put(`profile/status`, { status: status });
+    try {
+      return instance.put(`profile/status`, { status: status });
+    } catch (error) {
+    }
   },
   savePhoto(photoFile) {
     const formData = new FormData();

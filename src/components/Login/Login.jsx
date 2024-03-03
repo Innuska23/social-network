@@ -20,7 +20,6 @@ const Login = ({ login, isAuth, error, captchaUrl }) => {
 };
 
 const LoginForm = ({ login, isAuth, error, captchaUrl }) => {
-  console.log("🚀 ~ LoginForm ~ isAuth:", isAuth);
   const {
     register,
     handleSubmit,

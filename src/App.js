@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar/Navbar";
-import { Route, Routes, Navigate, HashRouter } from "react-router-dom";
+import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { initializeApp } from "./redux/app-reducer";
 import Preloader from "./components/common/Preloader/Preloader";
@@ -19,10 +19,25 @@ const ProfileContainer = React.lazy(() =>
 const Login = React.lazy(() => import("./components/Login/Login"));
 
 class App extends Component {
+  catchAllUnhandledErrors = (reason, promise) => {
+    alert("Some error occured");
+    // console.error(promiseRejectionEvent);
+  };
   componentDidMount() {
     if (!this.props.initialized) {
       this.props.initializeApp();
+      window.addEventListener(
+        "unhandledrejection",
+        this.catchAllUnhandledErrors
+      );
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(
+      "unhandledrejection",
+      this.catchAllUnhandledErrors
+    );
   }
 
   render() {
@@ -31,7 +46,7 @@ class App extends Component {
     }
 
     return (
-      <HashRouter>
+      <BrowserRouter>
         <div className="app-wrapper">
           <HeaderContainer />
           <Navbar />
@@ -42,6 +57,14 @@ class App extends Component {
                 element={
                   <React.Suspense fallback={<Preloader />}>
                     <DialogsContainer />
+                  </React.Suspense>
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <React.Suspense fallback={<Preloader />}>
+                    <Navigate to="/profile" />
                   </React.Suspense>
                 }
               />
@@ -85,7 +108,7 @@ class App extends Component {
             </Routes>
           </div>
         </div>
-      </HashRouter>
+      </BrowserRouter>
     );
   }
 }

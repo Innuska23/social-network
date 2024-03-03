@@ -25,13 +25,13 @@ class ProfileContainer extends React.Component {
     this.props.getStatus(userId);
   }
 
-  // componentDidMount() {
-  //   this.refreshProfile();
-  // }
+  componentDidMount() {
+    this.refreshProfile();
+  }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.router.params.userId !== prevProps.router.params.userId) {
-      // this.refreshProfile();
+      this.refreshProfile();
     }
   }
 
