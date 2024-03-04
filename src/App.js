@@ -96,7 +96,10 @@ class App extends Component {
               <Route path="/news" />
               <Route path="/music" />
               <Route path="/settings" />
-              <Route path="/users" element={<UsersContainer />} />
+              <Route
+                path="/users"
+                element={<UsersContainer pageTitle={"Самурай"} />}
+              />
               <Route
                 path="*"
                 element={
