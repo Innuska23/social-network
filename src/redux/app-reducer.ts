@@ -57,7 +57,7 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsType>
 export const initializeApp = (): ThunkType => async (dispatch: DispatchType) => {
   try {
     const response = await authAPI.me();
-    if (response.data.resultCode === 0) {
+    if (response.resultCode === 0) {
       // @ts-ignore
       await dispatch(getAuthUserData());
       dispatch(initializedSuccess());

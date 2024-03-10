@@ -1,5 +1,5 @@
 import { ThunkAction } from "redux-thunk";
-import { profileAPI } from "../api/api";
+import { ResultCodesEnum, profileAPI } from "../api/api";
 import { PhotosType, PostType, ProfileType } from "../types/types";
 import { Dispatch } from "redux";
 import { AppStateType } from "./redux-store";
@@ -138,8 +138,8 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsType>
 
 export const getUserProfile = (userId: number): ThunkType => async (dispatch: DispatchType, getState) => {
   try {
-    const response = await profileAPI.getProfile(userId);
-    dispatch(setUserProfile(response.data));
+    const responseProfile = await profileAPI.getProfile(userId);
+    dispatch(setUserProfile(responseProfile));
   } catch (error) {
     console.error("Error fetching user profile:", error);
   }
@@ -147,8 +147,8 @@ export const getUserProfile = (userId: number): ThunkType => async (dispatch: Di
 
 export const getStatus = (userId: number): ThunkType => async (dispatch: DispatchType) => {
   try {
-    const response = await profileAPI.getStatus(userId);
-    dispatch(setStatus(response.data));
+    const responseStatus = await profileAPI.getStatus(userId);
+    dispatch(setStatus(responseStatus));
   } catch (error) {
     console.error("Error fetching status:", error);
   }
@@ -158,7 +158,7 @@ export const updateStatus = (status: string): ThunkType => async (dispatch: Disp
   try {
     const response = await profileAPI.updateStatus(status);
     // @ts-ignore
-    if (response.data.resultCode === 0) {
+    if (response.data.resultCode === ResultCodesEnum.Success) {
       dispatch(setStatus(status));
     }
   } catch (error) {
@@ -168,9 +168,9 @@ export const updateStatus = (status: string): ThunkType => async (dispatch: Disp
 
 export const savePhoto = (file: any): ThunkType => async (dispatch: DispatchType) => {
   try {
-    const response = await profileAPI.savePhoto(file);
-    if (response.data.resultCode === 0) {
-      dispatch(savePhotoSuccess(response.data.data.photos));
+    const responsePhoto = await profileAPI.savePhoto(file);
+    if (responsePhoto.resultCode === ResultCodesEnum.Success) {
+      dispatch(savePhotoSuccess(responsePhoto.photos));
     }
   } catch (error) {
     console.error("Error saving photo:", error);
@@ -183,13 +183,13 @@ export const saveProfile = (profile: ProfileType): ThunkType => async (
 ) => {
   const userId = getState().auth.userId;
   try {
-    const response = await profileAPI.saveProfile(profile);
-    if (response.data.resultCode === 0) {
+    const responseProfile = await profileAPI.saveProfile(profile);
+    if (responseProfile.resultCode === ResultCodesEnum.Success) {
       // @ts-ignore
       dispatch(getUserProfile(userId));
     } else {
-      dispatch(saveProfileFailed(response.data.messages[0]));
-      console.error("Error saving profile:", response.data.messages[0]);
+      dispatch(saveProfileFailed(responseProfile.messages[0]));
+      console.error("Error saving profile:", responseProfile.messages[0]);
     }
   } catch (error: any) {
     dispatch(saveProfileFailed(error.message));
