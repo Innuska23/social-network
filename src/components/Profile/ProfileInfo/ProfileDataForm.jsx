@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import Textarea, { Input } from "../../common/FormsControl/FormsControl";
+import { Textarea, Input } from "../../common/FormsControl/FormsControl";
 import { useEffect } from "react";
 import s from "./ProfileInfo.module.css";
 

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import DialogItem from "./DialogItem/DialogItem";
 import s from "./Dialogs.module.css";
 import Message from "./Message/Message";
-import Textarea from "../common/FormsControl/FormsControl";
+import { Textarea } from "../common/FormsControl/FormsControl";
 
 const Dialogs = (props) => {
   const [messages, setMessages] = useState(props.dialogsPage.messages);
