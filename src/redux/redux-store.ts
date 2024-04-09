@@ -25,6 +25,10 @@ type ReducersType = typeof reducers
 
 export type AppStateType = ReturnType<ReducersType>
 
+type PropertiesTypes<T> = T extends { [key: string]: infer U } ? U : null
+
+export type InferActionTypes<T extends { [key: string]: (...args: any[]) => any }> = ReturnType<PropertiesTypes<T>>
+
 // @ts-ignore
 const composerEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 

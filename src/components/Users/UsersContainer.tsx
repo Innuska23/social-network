@@ -3,7 +3,6 @@ import Users from "./Users";
 import { connect } from "react-redux";
 import {
   follow,
-  setCurrentPage,
   unfollow,
   getUsers,
 } from "../../redux/users-reducer";
@@ -27,15 +26,14 @@ type MapStatePropsType = {
   isFetching: boolean
   totalItemsCount: number
   selectedPage?: number
-  users: Array <UserType>
-  followingInProgress: Array <number>
+  users: Array<UserType>
+  followingInProgress: Array<number>
 }
 
 type MapDispatchPropsType = {
   unfollow: (userId: number) => void;
   follow: (userId: number) => void;
   getUsers: (currentPage: number, pageSize: number) => void
-  setCurrentPage: (pageNumber: number) => void
 }
 
 type OwnPropsType = {
@@ -52,14 +50,13 @@ class UsersContainer extends React.Component<PropsType> {
 
   onPageChanged = (pageNumber: number) => {
     const { pageSize } = this.props;
-    this.props.setCurrentPage(pageNumber);
     this.props.getUsers(pageNumber, pageSize);
   };
 
   render() {
     return (
       <>
-      <h2>{this.props.pageTitle}</h2>
+        <h2>{this.props.pageTitle}</h2>
         {this.props.isFetching ? <Preloader /> : null}
         <Users
           totalItemsCount={this.props.totalItemsCount}
@@ -92,7 +89,6 @@ export default compose(
   connect<MapStatePropsType, MapDispatchPropsType, OwnPropsType, AppStateType>(mapStateToProps, {
     follow,
     unfollow,
-    setCurrentPage,
     getUsers,
   })
 )(UsersContainer);
