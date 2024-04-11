@@ -1,28 +1,25 @@
-import { ThunkAction } from "redux-thunk";
-import { authAPI } from "../api/api";
-import { getAuthUserData } from "./auth-reducer";
 import { Dispatch } from "redux";
-import { AppStateType } from "./redux-store";
 
-const INITIALIZED_SUCESS = "INITIALIZED_SUCESS";
-const INITIALIZED_FAILED = "INITIALIZED_FAILED";
+import { authAPI } from "../api/auth-api";
+import { getAuthUserData } from "./auth-reducer";
+import { BaseThunkType, InferActionTypes } from "./redux-store";
 
-export type InitialStateType = {
-  initialized: boolean,
-}
-
-let initialState: InitialStateType = {
+let initialState = {
   initialized: false,
 };
 
+export type InitialStateType = typeof initialState;
+
+type ActionsType = InferActionTypes<typeof actions>
+
 const appReducer = (state = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {
-    case INITIALIZED_SUCESS:
+    case "SN/APP/INITIALIZED_SUCESS":
       return {
         ...state,
         initialized: true,
       };
-    case INITIALIZED_FAILED:
+    case "SN/APP/INITIALIZED_FAILED":
       return {
         ...state,
         initialized: true,
@@ -32,27 +29,18 @@ const appReducer = (state = initialState, action: ActionsType): InitialStateType
   }
 };
 
-type ActionsType = InitializedSuccessActionType | InitializedFailedActionType
 
-type InitializedSuccessActionType = {
-  type: typeof INITIALIZED_SUCESS
+export const actions = {
+  initializedSuccess: () => ({
+    type: "SN/APP/INITIALIZED_SUCESS",
+  } as const),
+  initializedFailed: () => ({
+    type: "SN/APP/INITIALIZED_FAILED",
+  } as const)
 }
-
-type InitializedFailedActionType = {
-  type: typeof INITIALIZED_FAILED
-}
-
-export const initializedSuccess = (): InitializedSuccessActionType => ({
-  type: INITIALIZED_SUCESS,
-});
-
-export const initializedFailed = (): InitializedFailedActionType => ({
-  type: INITIALIZED_FAILED,
-});
 
 type DispatchType = Dispatch<ActionsType>
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsType>
-
+type ThunkType = BaseThunkType<ActionsType>
 
 export const initializeApp = (): ThunkType => async (dispatch: DispatchType) => {
   try {
@@ -60,12 +48,12 @@ export const initializeApp = (): ThunkType => async (dispatch: DispatchType) => 
     if (response.resultCode === 0) {
       // @ts-ignore
       await dispatch(getAuthUserData());
-      dispatch(initializedSuccess());
+      dispatch(actions.initializedSuccess());
     } else {
-      dispatch(initializedFailed());
+      dispatch(actions.initializedFailed());
     }
   } catch (e) {
-    dispatch(initializedFailed());
+    dispatch(actions.initializedFailed());
   }
 };
 

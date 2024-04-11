@@ -1,15 +1,9 @@
-import { ThunkAction } from "redux-thunk";
-import { ResultCodesEnum, profileAPI } from "../api/api";
-import { PhotosType, PostType, ProfileType } from "../types/types";
 import { Dispatch } from "redux";
-import { AppStateType } from "./redux-store";
 
-const ADD_POST = "profile/ADD_POST";
-const SET_USER_PROFILE = "profile/SET_USER_PROFILE";
-const SET_STATUS = "profile/SET_STATUS";
-const DELETE_POST = "profile/DELETE_POST";
-const SAVE_PHOTO_SUCCESS = "profile/SAVE_PHOTO_SUCCESS";
-const ERROR_SAVING_PROFILE = "profile/ERROR_SAVING_PROFILE";
+import { ResultCodesEnum } from "../api/api";
+import { PhotosType, PostType, ProfileType } from "../types/types";
+import { BaseThunkType, InferActionTypes } from "./redux-store";
+import { profileAPI } from "../api/profile-api";
 
 const initialState = {
   posts: [
@@ -23,9 +17,11 @@ const initialState = {
 
 export type InitialStateType = typeof initialState
 
+type ActionsType = InferActionTypes<typeof actions>
+
 const profileReducer = (state = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {
-    case ADD_POST:
+    case "SN/PROFILE/ADD_POST":
       const newPost = {
         id: state.posts.length + 1,
         message: action.newPostText,
@@ -37,25 +33,25 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
         newPostText: "",
       };
 
-    case SET_USER_PROFILE:
+    case "SN/PROFILE/SET_USER_PROFILE":
       return {
         ...state,
         profile: action.profile,
       };
 
-    case SET_STATUS:
+    case "SN/PROFILE/SET_STATUS":
       return {
         ...state,
         status: action.status,
       };
 
-    case DELETE_POST:
+    case "SN/PROFILE/DELETE_POST":
       return {
         ...state,
         posts: state.posts.filter((post) => post.id !== action.postId),
       };
 
-    case SAVE_PHOTO_SUCCESS:
+    case "SN/PROFILE/SAVE_PHOTO_SUCCESS":
       return {
         ...state,
         profile: {
@@ -69,77 +65,41 @@ const profileReducer = (state = initialState, action: ActionsType): InitialState
   }
 };
 
-type ActionsType = AddPostActionCreatorType | SetUserProfileActionType | SetStatusActionType | DeletePostActionType | SavePhotoSuccessActionType | SaveProfileFailedActionType
-
-
-type AddPostActionCreatorType = {
-  type: typeof ADD_POST
-  newPostText: string
+export const actions = {
+  addPostActionCreator: (newPostText: string) => ({
+    type: "SN/PROFILE/ADD_POST",
+    newPostText,
+  } as const),
+  setUserProfile: (profile: ProfileType) => ({
+    type: "SN/PROFILE/SET_USER_PROFILE",
+    profile,
+  } as const),
+  setStatus: (status: string) => ({
+    type: "SN/PROFILE/SET_STATUS",
+    status,
+  } as const),
+  deletePost: (postId: number) => ({
+    type: "SN/PROFILE/DELETE_POST",
+    postId,
+  } as const),
+  savePhotoSuccess: (photos: PhotosType) => ({
+    type: "SN/PROFILE/SAVE_PHOTO_SUCCESS",
+    photos,
+  } as const),
+  saveProfileFailed: (error: string) => ({
+    type: "SN/PROFILE/ERROR_SAVING_PROFILE",
+    error,
+  } as const),
 }
-
-export const addPostActionCreator = (newPostText: string): AddPostActionCreatorType => ({
-  type: ADD_POST,
-  newPostText,
-});
-
-type SetUserProfileActionType = {
-  type: typeof SET_USER_PROFILE
-  profile: ProfileType
-}
-
-export const setUserProfile = (profile: ProfileType): SetUserProfileActionType => ({
-  type: SET_USER_PROFILE,
-  profile,
-});
-
-type SetStatusActionType = {
-  type: typeof SET_STATUS
-  status: string
-}
-
-export const setStatus = (status: string): SetStatusActionType => ({
-  type: SET_STATUS,
-  status,
-});
-
-type DeletePostActionType = {
-  type: typeof DELETE_POST
-  postId: number
-}
-
-export const deletePost = (postId: number): DeletePostActionType => ({
-  type: DELETE_POST,
-  postId,
-});
-
-type SavePhotoSuccessActionType = {
-  type: typeof SAVE_PHOTO_SUCCESS
-  photos: PhotosType
-}
-
-export const savePhotoSuccess = (photos: PhotosType): SavePhotoSuccessActionType => ({
-  type: SAVE_PHOTO_SUCCESS,
-  photos,
-});
-
-type SaveProfileFailedActionType = {
-  type: typeof ERROR_SAVING_PROFILE
-  error: string
-}
-
-export const saveProfileFailed = (error: string): SaveProfileFailedActionType => ({
-  type: ERROR_SAVING_PROFILE,
-  error,
-});
 
 type DispatchType = Dispatch<ActionsType>
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsType>
+type ThunkType = BaseThunkType<ActionsType>
 
 
 export const getUserProfile = (userId: number): ThunkType => async (dispatch: DispatchType, getState) => {
   try {
     const responseProfile = await profileAPI.getProfile(userId);
-    dispatch(setUserProfile(responseProfile));
+    dispatch(actions.setUserProfile(responseProfile));
   } catch (error) {
     console.error("Error fetching user profile:", error);
   }
@@ -148,7 +108,7 @@ export const getUserProfile = (userId: number): ThunkType => async (dispatch: Di
 export const getStatus = (userId: number): ThunkType => async (dispatch: DispatchType) => {
   try {
     const responseStatus = await profileAPI.getStatus(userId);
-    dispatch(setStatus(responseStatus));
+    dispatch(actions.setStatus(responseStatus));
   } catch (error) {
     console.error("Error fetching status:", error);
   }
@@ -159,18 +119,18 @@ export const updateStatus = (status: string): ThunkType => async (dispatch: Disp
     const response = await profileAPI.updateStatus(status);
     // @ts-ignore
     if (response.data.resultCode === ResultCodesEnum.Success) {
-      dispatch(setStatus(status));
+      dispatch(actions.setStatus(status));
     }
   } catch (error) {
     console.error("Error updating status:", error);
   }
 };
 
-export const savePhoto = (file: any): ThunkType => async (dispatch: DispatchType) => {
+export const savePhoto = (file: File): ThunkType => async (dispatch: DispatchType) => {
   try {
     const responsePhoto = await profileAPI.savePhoto(file);
     if (responsePhoto.resultCode === ResultCodesEnum.Success) {
-      dispatch(savePhotoSuccess(responsePhoto.photos));
+      dispatch(actions.savePhotoSuccess(responsePhoto.photos));
     }
   } catch (error) {
     console.error("Error saving photo:", error);
@@ -188,14 +148,13 @@ export const saveProfile = (profile: ProfileType): ThunkType => async (
       // @ts-ignore
       dispatch(getUserProfile(userId));
     } else {
-      dispatch(saveProfileFailed(responseProfile.messages[0]));
+      dispatch(actions.saveProfileFailed(responseProfile.messages[0]));
       console.error("Error saving profile:", responseProfile.messages[0]);
     }
   } catch (error: any) {
-    dispatch(saveProfileFailed(error.message));
+    dispatch(actions.saveProfileFailed(error.message));
     console.error("Error saving profile:", error);
   }
 };
-
 
 export default profileReducer;
