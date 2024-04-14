@@ -1,27 +1,36 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
+
 import DialogItem from "./DialogItem/DialogItem";
-import s from "./Dialogs.module.css";
 import Message from "./Message/Message";
 import { Textarea } from "../common/FormsControl/FormsControl";
+import { InitialStateType } from "../../redux/dialogs-reducer";
 
-const Dialogs = (props) => {
+import s from "./Dialogs.module.css";
+
+type OwnPropsType = {
+  dialogsPage: InitialStateType;
+  onSubmit: (data: FormValues) => void;
+};
+
+type FormValues = {
+  Textarea: string;
+};
+
+const Dialogs: React.FC<OwnPropsType> = (props) => {
   const [messages, setMessages] = useState(props.dialogsPage.messages);
 
-  let state = props.dialogsPage;
+  const state = props.dialogsPage;
 
-  let dialogsElement = state?.dialogs.map((d) => {
-    return <DialogItem name={d.name} key={d.id} id={d.id} />;
-  });
+  const dialogsElement = state?.dialogs.map((d) => (
+    <DialogItem name={d.name} key={d.id} id={d.id} />
+  ));
 
-  let messagesElements = messages.map((m) => {
-    return <Message text={m.message} key={m.id} />;
-  });
+  const messagesElements = messages.map((m) => (
+    <Message text={m.message} key={m.id} />
+  ));
 
-  if (!props.isAuth) return <Navigate to={"/login"} />;
-
-  const addMessage = (newMessage) => {
+  const addMessage = (newMessage: string) => {
     const updatedMessages = [
       ...messages,
       { id: messages.length + 1, message: newMessage },
@@ -38,16 +47,20 @@ const Dialogs = (props) => {
   );
 };
 
-const AddNewMessage = (props) => {
+type AddNewMessageProps = {
+  addMessage: (newMessage: string) => void;
+};
+
+const AddNewMessage: React.FC<AddNewMessageProps> = (props) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, touchedFields },
     trigger,
-  } = useForm();
+  } = useForm<FormValues>();
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     await trigger();
     if (Object.keys(errors).length === 0) {
       props.addMessage(data.Textarea);

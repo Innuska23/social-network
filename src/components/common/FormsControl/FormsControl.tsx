@@ -14,6 +14,7 @@ type FormControlProps = {
     touched: boolean;
   };
   placeholder?: string;
+  className?: string;
   children: React.ReactNode;
 };
 
@@ -34,7 +35,7 @@ type InputProps = {
     name: string;
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-    onBlur: () => void | null;
+    onBlur?: () => void;
   };
   meta?: {
     error: string;
@@ -42,13 +43,13 @@ type InputProps = {
   };
   placeholder?: string;
   type?: string;
+  className?: string;
 };
 
-
 export const Textarea = forwardRef(
-  ({ field, meta, placeholder, ...restProps }: InputProps, ref: ForwardedRef<HTMLTextAreaElement>) => {
+  ({ field, meta, placeholder, className, ...restProps }: InputProps, ref: ForwardedRef<HTMLTextAreaElement>) => {
     return (
-      <FormControl input={field} meta={meta} placeholder={placeholder}>
+      <FormControl input={field} meta={meta} placeholder={placeholder} className={className}>
         <textarea {...field} {...restProps} ref={ref} />
       </FormControl>
     );

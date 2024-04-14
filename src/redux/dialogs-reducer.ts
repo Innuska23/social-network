@@ -51,7 +51,7 @@ const dialogsReducer = (state = initialState, action: ActionsType): InitialState
 // type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, AddMessageActionCreatorType>
 
 export const actions = {
-  addMessageActionCreator: (newMessageText: string) => ({
+  addMessage: (newMessageText: string) => ({
     type: "SN/DIALOGS/ADD_MESSAGE",
     newMessageText,
   } as const),

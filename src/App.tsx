@@ -1,14 +1,16 @@
 import React, { Component } from "react";
-import "./App.css";
-import Navbar from "./components/Navbar/Navbar";
+import { Provider } from "react-redux";
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import { connect } from "react-redux";
+
+import Navbar from "./components/Navbar/Navbar";
 import { initializeApp } from "./redux/app-reducer";
 import Preloader from "./components/common/Preloader/Preloader";
-import { Provider } from "react-redux";
-import store from "./redux/redux-store";
+import store, { AppStateType } from "./redux/redux-store";
 import UsersContainer from "./components/Users/UsersContainer";
 import HeaderContainer from "./components/Header/HeaderContainer";
+
+import "./App.css";
 
 const DialogsContainer = React.lazy(() =>
   import("./components/Dialogs/DialogsContainer")
@@ -18,8 +20,13 @@ const ProfileContainer = React.lazy(() =>
 );
 const Login = React.lazy(() => import("./components/Login/Login"));
 
-class App extends Component {
-  catchAllUnhandledErrors = (reason, promise) => {
+type AppPropsType = {
+  initialized: boolean;
+  initializeApp: () => void;
+};
+
+class App extends Component<AppPropsType> {
+  catchAllUnhandledErrors = (e: PromiseRejectionEvent) => {
     alert("Some error occured");
     // console.error(promiseRejectionEvent);
   };
@@ -76,7 +83,6 @@ class App extends Component {
                   </React.Suspense>
                 }
               />
-
               <Route
                 path="/profile/:userId?"
                 element={
@@ -116,7 +122,7 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: AppStateType) => ({
   initialized: state.app ? state.app.initialized : false,
 });
 
