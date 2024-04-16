@@ -13,11 +13,13 @@ import HeaderContainer from "./components/Header/HeaderContainer";
 import "./App.css";
 
 const DialogsContainer = React.lazy(() =>
-  import("./components/Dialogs/DialogsContainer")
+  import('./components/Dialogs/DialogsContainer')
 );
+
 const ProfileContainer = React.lazy(() =>
   import("./components/Profile/ProfileContainer")
 );
+
 const Login = React.lazy(() => import("./components/Login/Login"));
 
 type AppPropsType = {
