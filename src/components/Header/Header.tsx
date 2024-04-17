@@ -1,8 +1,18 @@
 import React from "react";
-import s from "./Header.module.css";
 import { NavLink, useNavigate } from "react-router-dom";
 
-const Header = (props) => {
+import s from "./Header.module.css";
+
+export type HeaderPropsType = {
+  isAuth: boolean,
+  login: string | null;
+}
+
+export type DispatchPropsType = {
+  logout: () => void,
+}
+
+const Header: React.FC<HeaderPropsType & DispatchPropsType> = (props) => {
   const navigate = useNavigate();
   const handleLogoutClick = async () => {
     await props.logout();

@@ -1,19 +1,30 @@
 import React, { useState } from "react";
-import s from "./MyPosts.module.css";
+import { useForm, SubmitHandler } from "react-hook-form";
+
 import Post from "./Post/Post";
-import { useForm } from "react-hook-form";
-import { required } from "../../../utils/validators/validators";
 import { Textarea } from "../../common/FormsControl/FormsControl";
 
-const MyPosts = (props) => {
-  const [posts, setPosts] = useState(props.posts);
+import s from "./MyPosts.module.css";
+
+interface PostData {
+  id: number;
+  message: string;
+  likes: number;
+}
+
+interface MyPostsProps {
+  posts: PostData[];
+}
+
+const MyPosts: React.FC<MyPostsProps> = (props) => {
+  const [posts, setPosts] = useState<PostData[]>(props.posts);
 
   let postsElement = posts?.map((p) => {
     return <Post key={p.id} message={p.message} likes={p.likes} />;
   });
 
-  const addPost = (newText) => {
-    const updatedPosts = [...posts, { id: posts.length + 1, message: newText }];
+  const addPost = (newText: string) => {
+    const updatedPosts = [...posts, { id: posts.length + 1, message: newText, likes: 0 }];
     setPosts(updatedPosts);
   };
 
@@ -29,7 +40,11 @@ const MyPosts = (props) => {
   );
 };
 
-const MyFormData = (props) => {
+interface MyFormDataProps {
+  addPost: (newText: string) => void;
+}
+
+const MyFormData: React.FC<MyFormDataProps> = (props) => {
   const {
     register,
     handleSubmit,
@@ -38,7 +53,7 @@ const MyFormData = (props) => {
     trigger,
   } = useForm();
 
-  let onAddPost = async (data) => {
+  const onAddPost: SubmitHandler<Record<string, string>> = async (data) => {
     await trigger();
     if (Object.keys(errors).length === 0) {
       props.addPost(data.Textarea);
@@ -50,9 +65,8 @@ const MyFormData = (props) => {
     <form onSubmit={handleSubmit(onAddPost)}>
       <div>
         <Textarea
-          component={Textarea}
           {...register("Textarea", {
-            required: required,
+            required: "Field is required",
             maxLength: {
               value: 30,
               message: "No more than 30 characters.",

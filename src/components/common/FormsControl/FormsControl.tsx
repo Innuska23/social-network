@@ -65,3 +65,6 @@ export const Input = forwardRef(
     );
   }
 );
+
+
+// export type GetStringKeys<T> = Extract<keyof T, string>
